@@ -185,15 +185,21 @@
     };
 
     Path.prototype.print = function() {
-      var param, path, _i, _len, _ref;
+      var param, path, tuple, _i, _j, _len, _len1, _ref, _ref1;
       path = [];
-      _ref = this.params;
+      _ref = this.map;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        param = _ref[_i];
-        if (param.value) {
-          path.push("/" + param.key + "/" + param.value);
-        } else {
-          path.push("/" + param.key);
+        tuple = _ref[_i];
+        _ref1 = this.params;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          param = _ref1[_j];
+          if (tuple.key === param.key) {
+            if (param.value) {
+              path.push("/" + param.key + "/" + param.value);
+            } else {
+              path.push("/" + param.key);
+            }
+          }
         }
       }
       if (this.any()) {

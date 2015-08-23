@@ -93,11 +93,13 @@ class Path
 
   print: () =>
     path = []
-    for param in @params
-      if param.value
-        path.push("/" + param.key + "/" + param.value)
-      else
-        path.push("/" + param.key)
+    for tuple in @map
+      for param in @params
+        if tuple.key is param.key
+          if param.value
+            path.push("/" + param.key + "/" + param.value)
+          else
+            path.push("/" + param.key)
     return if @any() then path.join("") else ""
 
   extract = (path, map) =>
