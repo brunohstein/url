@@ -43,30 +43,38 @@ class Path
     return param for param in @params when param.key is key
 
   add: (key, value) =>
-    if not @get(key)
-      @params.push(key: key, value: value or null)
+    if @get(key) and value
+      for param, index in @params when param.key is key
+        @params[index].value = [@params[index].value] if @params[index].value.constructor isnt Array
+        @params[index].value.push(value)
+    else
+      @params.push(key: key, value: value)
 
   replace: (key, value) =>
     if @get(key) and value
       for param, index in @params when param.key is key
         @params[index].value = value
 
-  remove: (key) =>
+  remove: (key, value) =>
     if @get(key)
       for param in @params
-        remove = param if param.key is key
-      @params.splice(@params.indexOf(remove), 1)
-
-  update: (data = []) =>
-    data = [data] if data.constructor isnt Array
-    for tuple in data
-      if param = @get(tuple.key)
-        if param.value is tuple.value
-          @remove(tuple.key, tuple.value)
-        else
-          @replace(tuple.key, tuple.value)
+        if param.key is key
+          remove = param
+          index = @params.indexOf(remove)
+      if value and remove.value.constructor is Array
+        @params[index].value.splice(remove.value.indexOf(value), 1)
       else
-        @add(tuple.key, tuple.value)
+        @params.splice(index, 1)
+
+  update: (key, value, unique = false) =>
+    if key and value
+      if param = @get(key)
+        if param.value is value or (param.value.constructor is Array and param.value.indexOf(value) isnt -1)
+          @remove(key, value)
+        else
+          if unique then @replace(key, value) else @add(key, value)
+      else
+        @add(key, value)
 
   clear: () =>
     @params = []
@@ -139,7 +147,7 @@ class QueryString
 
   update: (key, value, unique = false) =>
     if param = @get(key)
-      if param.value is value
+      if param.value is value or (param.value.constructor is Array and param.value.indexOf(value))
         @remove(key, value)
       else
         if unique then @replace(key, value) else @add(key, value)

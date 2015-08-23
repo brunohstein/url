@@ -77,10 +77,25 @@
     };
 
     Path.prototype.add = function(key, value) {
-      if (!this.get(key)) {
+      var index, param, _i, _len, _ref, _results;
+      if (this.get(key) && value) {
+        _ref = this.params;
+        _results = [];
+        for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
+          param = _ref[index];
+          if (!(param.key === key)) {
+            continue;
+          }
+          if (this.params[index].value.constructor !== Array) {
+            this.params[index].value = [this.params[index].value];
+          }
+          _results.push(this.params[index].value.push(value));
+        }
+        return _results;
+      } else {
         return this.params.push({
           key: key,
-          value: value || null
+          value: value
         });
       }
     };
@@ -100,42 +115,45 @@
       }
     };
 
-    Path.prototype.remove = function(key) {
-      var param, remove, _i, _len, _ref;
+    Path.prototype.remove = function(key, value) {
+      var index, param, remove, _i, _len, _ref;
       if (this.get(key)) {
         _ref = this.params;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           param = _ref[_i];
           if (param.key === key) {
             remove = param;
+            index = this.params.indexOf(remove);
           }
         }
-        return this.params.splice(this.params.indexOf(remove), 1);
+        if (value && remove.value.constructor === Array) {
+          return this.params[index].value.splice(remove.value.indexOf(value), 1);
+        } else {
+          return this.params.splice(index, 1);
+        }
       }
     };
 
-    Path.prototype.update = function(data) {
-      var param, tuple, _i, _len, _results;
-      if (data == null) {
-        data = [];
+    Path.prototype.update = function(key, value, unique) {
+      var param;
+      if (unique == null) {
+        unique = false;
       }
-      if (data.constructor !== Array) {
-        data = [data];
-      }
-      _results = [];
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        tuple = data[_i];
-        if (param = this.get(tuple.key)) {
-          if (param.value === tuple.value) {
-            _results.push(this.remove(tuple.key, tuple.value));
+      if (key && value) {
+        if (param = this.get(key)) {
+          if (param.value === value || (param.value.constructor === Array && param.value.indexOf(value) !== -1)) {
+            return this.remove(key, value);
           } else {
-            _results.push(this.replace(tuple.key, tuple.value));
+            if (unique) {
+              return this.replace(key, value);
+            } else {
+              return this.add(key, value);
+            }
           }
         } else {
-          _results.push(this.add(tuple.key, tuple.value));
+          return this.add(key, value);
         }
       }
-      return _results;
     };
 
     Path.prototype.clear = function() {
@@ -301,7 +319,7 @@
         unique = false;
       }
       if (param = this.get(key)) {
-        if (param.value === value) {
+        if (param.value === value || (param.value.constructor === Array && param.value.indexOf(value))) {
           return this.remove(key, value);
         } else {
           if (unique) {

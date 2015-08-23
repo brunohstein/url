@@ -23,8 +23,8 @@ describe "Path", ->
     it "should return null as the value of the key on the path if single", ->
       expect(url.path.get("one")).to.deep.equal({ key: "one", value: null })
 
-    it "should return the value of the of an updated path", ->
-      url.path.update({ key: "twenty", value: "twenty-one" })
+    it "should return the value of the key of an updated path", ->
+      url.path.update("twenty", "twenty-one")
       expect(url.path.get("twenty")).to.deep.equal({ key: "twenty", value: "twenty-one" })
 
     it "should return undefined if the key does not exist on the path", ->
@@ -34,6 +34,10 @@ describe "Path", ->
     it "should add a new key with a value to the path", ->
       url.path.add("twenty", "twenty-one")
       expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one")
+
+    it "should add a new value to a existing key on the path", ->
+      url.path.add("two", "twenty")
+      expect(url.path.print()).to.equal("/one/two/three,twenty/four/five")
 
     it "should add a new key without a value to the path", ->
       url.path.add("twenty")
@@ -56,7 +60,7 @@ describe "Path", ->
       url.path.replace("twenty", "twenty-one")
       expect(url.path.print()).to.equal("/one/two/three/four/five")
 
-  describe "remove(key)", ->
+  describe "remove(key, value)", ->
     it "should remove a key from the path", ->
       url.path.remove("two")
       expect(url.path.print()).to.equal("/one/four/five")
@@ -65,21 +69,31 @@ describe "Path", ->
       url.path.remove("two")
       expect(url.path.params[1]).to.not.deep.equal({ key: "two", value: "three" })
 
+    it "should remove a value from a key that have multiple from the path", ->
+      url.path.add("two", "twenty")
+      url.path.remove("two", "three")
+      expect(url.path.print()).to.equal("/one/two/twenty/four/five")
+
     it "should do nothing if the key does not exist", ->
       url.path.remove("twenty")
       expect(url.path.print()).to.equal("/one/two/three/four/five")
 
-  describe "update(data)", ->
+  describe "update(key, value, unique = false)", ->
     it "should return the path with the updated data", ->
-      url.path.update({ key: "two", value: "twenty" })
+      url.path.update("two", "twenty", true)
       expect(url.path.print()).to.equal("/one/two/twenty/four/five")
 
-    it "should return the path with the updated data when data is array", ->
-      url.path.update([{ key: "two", value: "twenty" }, { key: "four", value: "twenty-one" }])
-      expect(url.path.print()).to.equal("/one/two/twenty/four/twenty-one")
+    it "should return the path with the passed key removed", ->
+      url.path.update("two", "three")
+      expect(url.path.print()).to.equal("/one/four/five")
+
+    it "should return the path with the passed value removed", ->
+      url.path.update("two", "twenty")
+      url.path.update("two", "three")
+      expect(url.path.print()).to.equal("/one/two/twenty/four/five")
 
     it "should return the path with the updated data when key is not in the url", ->
-      url.path.update({ key: "twenty", value: "twenty-one" })
+      url.path.update("twenty", "twenty-one")
       expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one")
 
     it "should do nothing if data is empty", ->

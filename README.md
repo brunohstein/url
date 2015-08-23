@@ -21,9 +21,9 @@ var url = new Url("http://domain.com/one/two/three?four=five&six=seven,eight#nin
 
 `url.path.replace(key, value)`
 
-`url.path.remove(key)`
+`url.path.remove(key, value)`
 
-`url.path.update(data)`
+`url.path.update(key, value, unique)`
 
 `url.path.any()`
 
