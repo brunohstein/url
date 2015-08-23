@@ -139,6 +139,10 @@
       return _results;
     };
 
+    Path.prototype.clear = function() {
+      return this.params = [];
+    };
+
     Path.prototype.any = function() {
       return this.params.length > 0;
     };
@@ -158,7 +162,7 @@
       if (this.any()) {
         return path.join("");
       } else {
-        return this.input;
+        return "";
       }
     };
 
@@ -183,6 +187,7 @@
       this.map = map;
       this.print = __bind(this.print, this);
       this.any = __bind(this.any, this);
+      this.clear = __bind(this.clear, this);
       this.update = __bind(this.update, this);
       this.remove = __bind(this.remove, this);
       this.replace = __bind(this.replace, this);

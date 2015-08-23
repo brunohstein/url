@@ -67,6 +67,9 @@ class Path
       else
         @add(tuple.key, tuple.value)
 
+  clear: () =>
+    @params = []
+
   any: () =>
     return @params.length > 0
 
@@ -77,7 +80,7 @@ class Path
         path.push("/" + param.key + "/" + param.value)
       else
         path.push("/" + param.key)
-    return if @any() then path.join("") else @input
+    return if @any() then path.join("") else ""
 
   extract = (path, map) =>
     params = []

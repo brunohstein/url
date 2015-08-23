@@ -33,26 +33,37 @@ describe "Path", ->
   describe "add(key, value)", ->
     it "should add a new key with a value to the path", ->
       url.path.add("twenty", "twenty-one")
-      console.log url.path.print()
       expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one")
 
     it "should add a new key without a value to the path", ->
       url.path.add("twenty")
       expect(url.path.print()).to.equal("/one/two/three/four/five/twenty")
 
+    it "should add the key and value on the params", ->
+      url.path.add("twenty", "twenty-one")
+      expect(url.path.params[3]).to.deep.equal({ key: "twenty", value: "twenty-one" })
+
   describe "replace(key, value)", ->
     it "should replace the value of a key on the path", ->
       url.path.replace("two", "twenty")
       expect(url.path.print()).to.equal("/one/two/twenty/four/five")
+
+    it "should replace the value of a key on the params", ->
+      url.path.replace("two", "twenty")
+      expect(url.path.params[1]).to.deep.equal({ key: "two", value: "twenty" })
 
     it "should do nothing if the key does not exist", ->
       url.path.replace("twenty", "twenty-one")
       expect(url.path.print()).to.equal("/one/two/three/four/five")
 
   describe "remove(key)", ->
-    it "should remove a key of the path", ->
+    it "should remove a key from the path", ->
       url.path.remove("two")
       expect(url.path.print()).to.equal("/one/four/five")
+
+    it "should remove a key from the params", ->
+      url.path.remove("two")
+      expect(url.path.params[1]).to.not.deep.equal({ key: "two", value: "three" })
 
     it "should do nothing if the key does not exist", ->
       url.path.remove("twenty")
@@ -67,9 +78,26 @@ describe "Path", ->
       url.path.update([{ key: "two", value: "twenty" }, { key: "four", value: "twenty-one" }])
       expect(url.path.print()).to.equal("/one/two/twenty/four/twenty-one")
 
+    it "should return the path with the updated data when key is not in the url", ->
+      url.path.update({ key: "twenty", value: "twenty-one" })
+      expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one")
+
     it "should do nothing if data is empty", ->
       url.path.update()
       expect(url.path.print()).to.equal("/one/two/three/four/five")
+
+  describe "clear()", ->
+    it "should remove all the params of the path", ->
+      url.path.clear()
+      expect(url.path.print()).to.be.empty
+
+  describe "any()", ->
+    it "should return true if there is any params in the path", ->
+      expect(url.path.any()).to.be.true
+
+    it "should return false if there is not any params in the path", ->
+      url.path.clear()
+      expect(url.path.any()).to.be.false
 
   describe "print()", ->
     it "should return the path", ->

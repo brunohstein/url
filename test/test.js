@@ -72,12 +72,18 @@
     describe("add(key, value)", function() {
       it("should add a new key with a value to the path", function() {
         url.path.add("twenty", "twenty-one");
-        console.log(url.path.print());
         return expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one");
       });
-      return it("should add a new key without a value to the path", function() {
+      it("should add a new key without a value to the path", function() {
         url.path.add("twenty");
         return expect(url.path.print()).to.equal("/one/two/three/four/five/twenty");
+      });
+      return it("should add the key and value on the params", function() {
+        url.path.add("twenty", "twenty-one");
+        return expect(url.path.params[3]).to.deep.equal({
+          key: "twenty",
+          value: "twenty-one"
+        });
       });
     });
     describe("replace(key, value)", function() {
@@ -85,15 +91,29 @@
         url.path.replace("two", "twenty");
         return expect(url.path.print()).to.equal("/one/two/twenty/four/five");
       });
+      it("should replace the value of a key on the params", function() {
+        url.path.replace("two", "twenty");
+        return expect(url.path.params[1]).to.deep.equal({
+          key: "two",
+          value: "twenty"
+        });
+      });
       return it("should do nothing if the key does not exist", function() {
         url.path.replace("twenty", "twenty-one");
         return expect(url.path.print()).to.equal("/one/two/three/four/five");
       });
     });
     describe("remove(key)", function() {
-      it("should remove a key of the path", function() {
+      it("should remove a key from the path", function() {
         url.path.remove("two");
         return expect(url.path.print()).to.equal("/one/four/five");
+      });
+      it("should remove a key from the params", function() {
+        url.path.remove("two");
+        return expect(url.path.params[1]).to.not.deep.equal({
+          key: "two",
+          value: "three"
+        });
       });
       return it("should do nothing if the key does not exist", function() {
         url.path.remove("twenty");
@@ -120,9 +140,31 @@
         ]);
         return expect(url.path.print()).to.equal("/one/two/twenty/four/twenty-one");
       });
+      it("should return the path with the updated data when key is not in the url", function() {
+        url.path.update({
+          key: "twenty",
+          value: "twenty-one"
+        });
+        return expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one");
+      });
       return it("should do nothing if data is empty", function() {
         url.path.update();
         return expect(url.path.print()).to.equal("/one/two/three/four/five");
+      });
+    });
+    describe("clear()", function() {
+      return it("should remove all the params of the path", function() {
+        url.path.clear();
+        return expect(url.path.print()).to.be.empty;
+      });
+    });
+    describe("any()", function() {
+      it("should return true if there is any params in the path", function() {
+        return expect(url.path.any()).to.be["true"];
+      });
+      return it("should return false if there is not any params in the path", function() {
+        url.path.clear();
+        return expect(url.path.any()).to.be["false"];
       });
     });
     return describe("print()", function() {
