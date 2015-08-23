@@ -1,6 +1,11 @@
 ## API
 
-`var url = new Url("http://domain.com")`
+```javascript
+var url = new Url("http://domain.com/one/two/three?four=five&six=seven,eight#nine", [
+  { key: "one", value: false },
+  { key: "two", value: true }
+])
+```
 
 `url.print()`
 
