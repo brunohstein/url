@@ -158,13 +158,19 @@
         return expect(url.path.print()).to.be.empty;
       });
     });
-    describe("any()", function() {
+    describe("any(but)", function() {
       it("should return true if there is any params in the path", function() {
         return expect(url.path.any()).to.be["true"];
       });
-      return it("should return false if there is not any params in the path", function() {
+      it("should return false if there is not any params in the path", function() {
         url.path.clear();
         return expect(url.path.any()).to.be["false"];
+      });
+      it("should return true if there is any params in the path but the ones in the argument", function() {
+        return expect(url.path.any("two")).to.be["true"];
+      });
+      return it("should return false if there is not any params in the path but the ones in the argument", function() {
+        return expect(url.path.any(["one", "two", "four"])).to.be["false"];
       });
     });
     return describe("print()", function() {

@@ -91,13 +91,19 @@ describe "Path", ->
       url.path.clear()
       expect(url.path.print()).to.be.empty
 
-  describe "any()", ->
+  describe "any(but)", ->
     it "should return true if there is any params in the path", ->
       expect(url.path.any()).to.be.true
 
     it "should return false if there is not any params in the path", ->
       url.path.clear()
       expect(url.path.any()).to.be.false
+
+    it "should return true if there is any params in the path but the ones in the argument", ->
+      expect(url.path.any("two")).to.be.true
+
+    it "should return false if there is not any params in the path but the ones in the argument", ->
+      expect(url.path.any(["one", "two", "four"])).to.be.false
 
   describe "print()", ->
     it "should return the path", ->

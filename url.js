@@ -101,17 +101,16 @@
     };
 
     Path.prototype.remove = function(key) {
-      var index, param, _i, _len, _ref, _results;
+      var param, remove, _i, _len, _ref;
       if (this.get(key)) {
         _ref = this.params;
-        _results = [];
-        for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-          param = _ref[index];
-          if (param && param.key === key) {
-            _results.push(this.params.splice(index, 1));
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          param = _ref[_i];
+          if (param.key === key) {
+            remove = param;
           }
         }
-        return _results;
+        return this.params.splice(this.params.indexOf(remove), 1);
       }
     };
 
@@ -143,8 +142,28 @@
       return this.params = [];
     };
 
-    Path.prototype.any = function() {
-      return this.params.length > 0;
+    Path.prototype.any = function(but) {
+      var ignore, param, params, _i, _j, _len, _len1, _ref;
+      if (but) {
+        if (but.constructor !== Array) {
+          but = [but];
+        }
+        params = this.params.slice();
+        for (_i = 0, _len = but.length; _i < _len; _i++) {
+          ignore = but[_i];
+          _ref = this.params;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            param = _ref[_j];
+            if (param.key === ignore) {
+              param = param;
+            }
+          }
+          params.splice(params.indexOf(param), 1);
+        }
+        return params.length > 0;
+      } else {
+        return this.params.length > 0;
+      }
     };
 
     Path.prototype.print = function() {
@@ -258,22 +277,21 @@
     };
 
     QueryString.prototype.remove = function(key, value) {
-      var index, param, values, _i, _len, _ref, _results;
+      var index, param, remove, _i, _len, _ref;
       if (this.get(key)) {
         _ref = this.params;
-        _results = [];
-        for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-          param = _ref[index];
-          if (param && param.key === key) {
-            if (value && param.value.constructor === Array) {
-              values = this.params[index].value;
-              _results.push(this.params[index].value.splice(values.indexOf(value), 1));
-            } else {
-              _results.push(this.params.splice(index, 1));
-            }
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          param = _ref[_i];
+          if (param.key === key) {
+            remove = param;
+            index = this.params.indexOf(remove);
           }
         }
-        return _results;
+        if (value && remove.value.constructor === Array) {
+          return this.params[index].value.splice(remove.value.indexOf(value), 1);
+        } else {
+          return this.params.splice(index, 1);
+        }
       }
     };
 

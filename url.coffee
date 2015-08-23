@@ -53,8 +53,9 @@ class Path
 
   remove: (key) =>
     if @get(key)
-      for param, index in @params when param and param.key is key
-        @params.splice(index, 1)
+      for param in @params
+        remove = param if param.key is key
+      @params.splice(@params.indexOf(remove), 1)
 
   update: (data = []) =>
     data = [data] if data.constructor isnt Array
@@ -70,8 +71,17 @@ class Path
   clear: () =>
     @params = []
 
-  any: () =>
-    return @params.length > 0
+  any: (but) =>
+    if but
+      but = [but] if but.constructor isnt Array
+      params = @params.slice()
+      for ignore in but
+        for param in @params
+          param = param if param.key is ignore
+        params.splice(params.indexOf(param), 1)
+      return params.length > 0
+    else
+      return @params.length > 0
 
   print: () =>
     path = []
@@ -118,12 +128,14 @@ class QueryString
 
   remove: (key, value) =>
     if @get(key)
-      for param, index in @params when param and param.key is key
-        if value and param.value.constructor is Array
-          values = @params[index].value
-          @params[index].value.splice(values.indexOf(value), 1)
-        else
-          @params.splice(index, 1)
+      for param in @params
+        if param.key is key
+          remove = param
+          index = @params.indexOf(remove)
+      if value and remove.value.constructor is Array
+        @params[index].value.splice(remove.value.indexOf(value), 1)
+      else
+        @params.splice(index, 1)
 
   update: (key, value, unique = false) =>
     if param = @get(key)
