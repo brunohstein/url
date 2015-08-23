@@ -163,17 +163,20 @@
     };
 
     extract = function(path, map) {
-      var getValue, param, tuple, _i, _len, _results;
-      _results = [];
+      var match, param, params, splitParam, tuple, _i, _len;
+      params = [];
       for (_i = 0, _len = map.length; _i < _len; _i++) {
         tuple = map[_i];
-        getValue = new RegExp("" + tuple.key + "\/.+?(?=\/|$)");
-        _results.push(param = {
-          key: tuple.key,
-          value: tuple.value ? path.match(getValue)[0].split("/")[1] : null
-        });
+        splitParam = new RegExp("" + tuple.key + "\/.+?(?=\/|$)");
+        if (match = path.match(splitParam)) {
+          param = {
+            key: tuple.key,
+            value: tuple.value ? match[0].split("/")[1] : null
+          };
+          params.push(param);
+        }
       }
-      return _results;
+      return params;
     };
 
     function Path(path, map) {

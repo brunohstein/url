@@ -80,11 +80,15 @@ class Path
     return if @any() then path.join("") else @input
 
   extract = (path, map) =>
+    params = []
     for tuple in map
-      getValue = new RegExp("#{tuple.key}\/.+?(?=\/|$)")
-      param =
-        key: tuple.key
-        value: if tuple.value then path.match(getValue)[0].split("/")[1] else null
+      splitParam = new RegExp("#{tuple.key}\/.+?(?=\/|$)")
+      if match = path.match(splitParam)
+        param =
+          key: tuple.key
+          value: if tuple.value then match[0].split("/")[1] else null
+        params.push(param)
+    return params
 
   constructor: (path, @map) ->
     @input = path

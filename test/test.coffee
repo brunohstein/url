@@ -2,7 +2,7 @@ expect = chai.expect
 url = null
 
 beforeEach ->
-  map = [{ key: "one", value: false }, { key: "two", value: true }, { key: "four", value: true }]
+  map = [{ key: "one", value: false }, { key: "two", value: true }, { key: "four", value: true }, { key: "twenty", value: "twenty-one" }]
   url = new Url("http://domain.com/one/two/three/four/five?six=seven&eight=nine&ten=eleven,twelve#thirteen", map)
 
 describe "Url", ->
@@ -23,12 +23,17 @@ describe "Path", ->
     it "should return null as the value of the key on the path if single", ->
       expect(url.path.get("one")).to.deep.equal({ key: "one", value: null })
 
+    it "should return the value of the of an updated path", ->
+      url.path.update({ key: "twenty", value: "twenty-one" })
+      expect(url.path.get("twenty")).to.deep.equal({ key: "twenty", value: "twenty-one" })
+
     it "should return undefined if the key does not exist on the path", ->
       expect(url.path.get("twenty")).to.be.undefined
 
   describe "add(key, value)", ->
     it "should add a new key with a value to the path", ->
       url.path.add("twenty", "twenty-one")
+      console.log url.path.print()
       expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one")
 
     it "should add a new key without a value to the path", ->

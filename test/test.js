@@ -17,6 +17,9 @@
       }, {
         key: "four",
         value: true
+      }, {
+        key: "twenty",
+        value: "twenty-one"
       }
     ];
     return url = new Url("http://domain.com/one/two/three/four/five?six=seven&eight=nine&ten=eleven,twelve#thirteen", map);
@@ -52,6 +55,16 @@
           value: null
         });
       });
+      it("should return the value of the of an updated path", function() {
+        url.path.update({
+          key: "twenty",
+          value: "twenty-one"
+        });
+        return expect(url.path.get("twenty")).to.deep.equal({
+          key: "twenty",
+          value: "twenty-one"
+        });
+      });
       return it("should return undefined if the key does not exist on the path", function() {
         return expect(url.path.get("twenty")).to.be.undefined;
       });
@@ -59,6 +72,7 @@
     describe("add(key, value)", function() {
       it("should add a new key with a value to the path", function() {
         url.path.add("twenty", "twenty-one");
+        console.log(url.path.print());
         return expect(url.path.print()).to.equal("/one/two/three/four/five/twenty/twenty-one");
       });
       return it("should add a new key without a value to the path", function() {
