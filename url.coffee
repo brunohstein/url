@@ -54,11 +54,13 @@ class Path
         @params[index].value.push(value)
     else
       @params.push(key: key, value: value)
+    return @
 
   replace: (key, value) =>
     if @get(key) and value
       for param, index in @params when param.key is key
         @params[index].value = value
+    return @
 
   remove: (key, value) =>
     if @get(key)
@@ -70,6 +72,7 @@ class Path
         @params[index].value.splice(remove.value.indexOf(value), 1)
       else
         @params.splice(index, 1)
+    return @
 
   update: (key, value, unique = false) =>
     if key and value
@@ -80,17 +83,20 @@ class Path
           if unique then @replace(key, value) else @add(key, value)
       else
         @add(key, value)
+    return @
 
   clear: () =>
     @params = []
+    return @
 
   any: (but) =>
     if but
       but = [but] if but.constructor isnt Array
       params = @params.slice()
+      remove = []
       for ignore in but
-        for param in @params
-          param = param if param.key is ignore
+        remove.push(param) for param in @params when param.key is ignore
+      for param in remove
         params.splice(params.indexOf(param), 1)
       return params.length > 0
     else
@@ -113,9 +119,13 @@ class Path
       checkParam = new RegExp("#{tuple.key}(?=\/|$)")
       splitParam = new RegExp("#{tuple.key}\/.+?(?=\/|$)")
       if match = path.match(splitParam) or path.match(checkParam)
+        value = if tuple.value then match[0].split("/")[1] else null
+        if value
+          value = value.split(",")
+          value = if value.length > 1 then value else value[0]
         param =
           key: tuple.key
-          value: if tuple.value then match[0].split("/")[1] else null
+          value: value
         params.push(param)
     return params
 
@@ -136,11 +146,13 @@ class QueryString
         @params[index].value.push(value)
     else
       @params.push(key: key, value: value)
+    return @
 
   replace: (key, value) =>
     if @get(key) and value
       for param, index in @params when param.key is key
         @params[index].value = value
+    return @
 
   remove: (key, value) =>
     if @get(key)
@@ -152,6 +164,7 @@ class QueryString
         @params[index].value.splice(remove.value.indexOf(value), 1)
       else
         @params.splice(index, 1)
+    return @
 
   update: (key, value, unique = false) =>
     if param = @get(key)
@@ -161,12 +174,24 @@ class QueryString
         if unique then @replace(key, value) else @add(key, value)
     else
       @add(key, value)
+    return @
 
   clear: () =>
     @params = []
+    return @
 
-  any: () =>
-    return @params.length > 0
+  any: (but) =>
+    if but
+      but = [but] if but.constructor isnt Array
+      params = @params.slice()
+      remove = []
+      for ignore in but
+        remove.push(param) for param in @params when param.key is ignore
+      for param in remove
+        params.splice(params.indexOf(param), 1)
+      return params.length > 0
+    else
+      return @params.length > 0
 
   print: () =>
     queryString = []

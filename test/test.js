@@ -117,8 +117,7 @@
         });
       });
       it("should remove a value from a key that have multiple from the path", function() {
-        url.path.add("two", "twenty");
-        url.path.remove("two", "three");
+        url.path.add("two", "twenty").remove("two", "three");
         return expect(url.path.print()).to.equal("/one/two/twenty/four/five");
       });
       return it("should do nothing if the key does not exist", function() {
@@ -136,8 +135,7 @@
         return expect(url.path.print()).to.equal("/one/four/five");
       });
       it("should return the path with the passed value removed", function() {
-        url.path.update("two", "twenty");
-        url.path.update("two", "three");
+        url.path.update("two", "twenty").update("two", "three");
         return expect(url.path.print()).to.equal("/one/two/twenty/four/five");
       });
       it("should return the path with the updated data when key is not in the url", function() {
@@ -253,13 +251,19 @@
         return expect(url.queryString.print()).to.be.empty;
       });
     });
-    describe("any()", function() {
+    describe("any(but)", function() {
       it("should return true if there is any params in the querystring", function() {
         return expect(url.queryString.any()).to.be["true"];
       });
-      return it("should return false if there is not any params in the querystring", function() {
+      it("should return false if there is not any params in the querystring", function() {
         url.queryString.clear();
         return expect(url.queryString.any()).to.be["false"];
+      });
+      it("should return true if there is any params in the querystring but the ones in the argument", function() {
+        return expect(url.queryString.any("eight")).to.be["true"];
+      });
+      return it("should return false if there is not any params in the querystring but the ones in the argument", function() {
+        return expect(url.queryString.any(["six", "eight", "ten"])).to.be["false"];
       });
     });
     return describe("print()", function() {

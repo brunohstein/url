@@ -70,8 +70,7 @@ describe "Path", ->
       expect(url.path.params[1]).to.not.deep.equal({ key: "two", value: "three" })
 
     it "should remove a value from a key that have multiple from the path", ->
-      url.path.add("two", "twenty")
-      url.path.remove("two", "three")
+      url.path.add("two", "twenty").remove("two", "three")
       expect(url.path.print()).to.equal("/one/two/twenty/four/five")
 
     it "should do nothing if the key does not exist", ->
@@ -88,8 +87,7 @@ describe "Path", ->
       expect(url.path.print()).to.equal("/one/four/five")
 
     it "should return the path with the passed value removed", ->
-      url.path.update("two", "twenty")
-      url.path.update("two", "three")
+      url.path.update("two", "twenty").update("two", "three")
       expect(url.path.print()).to.equal("/one/two/twenty/four/five")
 
     it "should return the path with the updated data when key is not in the url", ->
@@ -187,13 +185,19 @@ describe "QueryString", ->
       url.queryString.clear()
       expect(url.queryString.print()).to.be.empty
 
-  describe "any()", ->
+  describe "any(but)", ->
     it "should return true if there is any params in the querystring", ->
       expect(url.queryString.any()).to.be.true
 
     it "should return false if there is not any params in the querystring", ->
       url.queryString.clear()
       expect(url.queryString.any()).to.be.false
+
+    it "should return true if there is any params in the querystring but the ones in the argument", ->
+      expect(url.queryString.any("eight")).to.be.true
+
+    it "should return false if there is not any params in the querystring but the ones in the argument", ->
+      expect(url.queryString.any(["six", "eight", "ten"])).to.be.false
 
   describe "print()", ->
     it "should return the querystring", ->
