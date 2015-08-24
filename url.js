@@ -382,10 +382,16 @@
       for (_i = 0, _len = params.length; _i < _len; _i++) {
         param = params[_i];
         param = param.split("=");
-        value = param[1].split(",");
+        value = param[1];
+        if (value) {
+          value = value.split(",");
+          value = value.length > 1 ? value : value[0];
+        } else {
+          value = null;
+        }
         _results.push(param = {
           key: param[0],
-          value: value.length > 1 ? value : value[0]
+          value: value
         });
       }
       return _results;

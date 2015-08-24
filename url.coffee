@@ -177,10 +177,15 @@ class QueryString
     params = queryString.split("&")
     for param in params
       param = param.split("=")
-      value = param[1].split(",")
+      value = param[1]
+      if value
+        value = value.split(",")
+        value = if value.length > 1 then value else value[0]
+      else
+        value = null
       param =
         key: param[0]
-        value: if value.length > 1 then value else value[0]
+        value: value
 
   constructor: (queryString) ->
     @input = queryString
