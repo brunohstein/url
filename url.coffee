@@ -16,7 +16,12 @@ class @Url
     hash = url.split("#")[1]
     hash = if hash then hash else null
 
-    return origin: origin, path: path, queryString: queryString, hash: hash
+    map = []
+    if path
+      params = path.replace(/^\//, "").split("/")
+      map.push(key: param, value: false) for param in params
+
+    return origin: origin, path: path, queryString: queryString, hash: hash, map: map
 
   constructor: (url, map) ->
     throw name: "UrlException", message: "Required parameter url is missing." if not url
@@ -25,7 +30,7 @@ class @Url
     structure = extract(@input)
 
     @origin = new Origin(structure.origin)
-    @path = new Path(structure.path, map)
+    @path = new Path(structure.path, if map then map else structure.map)
     @queryString = new QueryString(structure.queryString)
     @hash = new Hash(structure.hash)
 
@@ -105,8 +110,9 @@ class Path
   extract = (path, map) =>
     params = []
     for tuple in map
+      checkParam = new RegExp("#{tuple.key}(?=\/|$)")
       splitParam = new RegExp("#{tuple.key}\/.+?(?=\/|$)")
-      if match = path.match(splitParam)
+      if match = path.match(splitParam) or path.match(checkParam)
         param =
           key: tuple.key
           value: if tuple.value then match[0].split("/")[1] else null
@@ -115,7 +121,7 @@ class Path
 
   constructor: (path, @map) ->
     @input = path
-    @map = [@map] if @map and @map.constructor isnt Array
+    @map = [@map] if @map.constructor isnt Array
     @params = if @map then extract(path, @map) else []
 
 class QueryString

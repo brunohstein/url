@@ -10,7 +10,7 @@
     };
 
     extract = function(url) {
-      var hash, origin, path, queryString;
+      var hash, map, origin, param, params, path, queryString, _i, _len;
       origin = url.match(/^((https?|ftp):\/\/|www?|\/\/).+?(?=\/|\?|\#|$)/);
       origin = origin ? origin[0] : null;
       path = origin ? url.split(origin)[1] : url;
@@ -19,11 +19,23 @@
       queryString = queryString ? queryString.split("#")[0] : null;
       hash = url.split("#")[1];
       hash = hash ? hash : null;
+      map = [];
+      if (path) {
+        params = path.replace(/^\//, "").split("/");
+        for (_i = 0, _len = params.length; _i < _len; _i++) {
+          param = params[_i];
+          map.push({
+            key: param,
+            value: false
+          });
+        }
+      }
       return {
         origin: origin,
         path: path,
         queryString: queryString,
-        hash: hash
+        hash: hash,
+        map: map
       };
     };
 
@@ -39,7 +51,7 @@
       this.input = url;
       structure = extract(this.input);
       this.origin = new Origin(structure.origin);
-      this.path = new Path(structure.path, map);
+      this.path = new Path(structure.path, map ? map : structure.map);
       this.queryString = new QueryString(structure.queryString);
       this.hash = new Hash(structure.hash);
     }
@@ -210,12 +222,13 @@
     };
 
     extract = function(path, map) {
-      var match, param, params, splitParam, tuple, _i, _len;
+      var checkParam, match, param, params, splitParam, tuple, _i, _len;
       params = [];
       for (_i = 0, _len = map.length; _i < _len; _i++) {
         tuple = map[_i];
+        checkParam = new RegExp("" + tuple.key + "(?=\/|$)");
         splitParam = new RegExp("" + tuple.key + "\/.+?(?=\/|$)");
-        if (match = path.match(splitParam)) {
+        if (match = path.match(splitParam) || path.match(checkParam)) {
           param = {
             key: tuple.key,
             value: tuple.value ? match[0].split("/")[1] : null
@@ -237,7 +250,7 @@
       this.add = __bind(this.add, this);
       this.get = __bind(this.get, this);
       this.input = path;
-      if (this.map && this.map.constructor !== Array) {
+      if (this.map.constructor !== Array) {
         this.map = [this.map];
       }
       this.params = this.map ? extract(path, this.map) : [];
