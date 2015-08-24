@@ -25,7 +25,7 @@ var url = new Url("http://domain.com/one/two/three?four=five&six=seven,eight#nin
 
 `url.path.update(key, value, unique)`
 
-`url.path.any()`
+`url.path.any(but)`
 
 `url.path.print()`
 
@@ -43,7 +43,7 @@ var url = new Url("http://domain.com/one/two/three?four=five&six=seven,eight#nin
 
 `url.queryString.clear()`
 
-`url.queryString.any()`
+`url.queryString.any(but)`
 
 `url.queryString.print()`
 
