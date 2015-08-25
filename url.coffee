@@ -115,6 +115,7 @@ class Path
 
   extract = (path, map) =>
     params = []
+    return params unless path
     for tuple in map
       checkParam = new RegExp("#{tuple.key}(?=\/|$)")
       splitParam = new RegExp("#{tuple.key}\/.+?(?=\/|$)")
