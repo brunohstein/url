@@ -152,7 +152,7 @@
       }
       if (key && value) {
         if (param = this.get(key)) {
-          if (param.value === value || (param.value.constructor === Array && param.value.indexOf(value) !== -1)) {
+          if (param.value && (param.value === value || (param.value.constructor === Array && param.value.indexOf(value) !== -1))) {
             this.remove(key, value);
           } else {
             if (unique) {
@@ -229,6 +229,9 @@
     extract = function(path, map) {
       var checkParam, match, param, params, splitParam, tuple, value, _i, _len;
       params = [];
+      if (!path) {
+        return params;
+      }
       for (_i = 0, _len = map.length; _i < _len; _i++) {
         tuple = map[_i];
         checkParam = new RegExp("" + tuple.key + "(?=\/|$)");
@@ -347,7 +350,7 @@
         unique = false;
       }
       if (param = this.get(key)) {
-        if (param.value === value || (param.value.constructor === Array && param.value.indexOf(value))) {
+        if (param.value && (param.value === value || (param.value.constructor === Array && param.value.indexOf(value) !== -1))) {
           this.remove(key, value);
         } else {
           if (unique) {

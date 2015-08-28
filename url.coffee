@@ -77,7 +77,7 @@ class Path
   update: (key, value, unique = false) =>
     if key and value
       if param = @get(key)
-        if param.value is value or (param.value.constructor is Array and param.value.indexOf(value) isnt -1)
+        if param.value and (param.value is value or (param.value.constructor is Array and param.value.indexOf(value) isnt -1))
           @remove(key, value)
         else
           if unique then @replace(key, value) else @add(key, value)
@@ -169,7 +169,7 @@ class QueryString
 
   update: (key, value, unique = false) =>
     if param = @get(key)
-      if param.value is value or (param.value.constructor is Array and param.value.indexOf(value))
+      if param.value and (param.value is value or (param.value.constructor is Array and param.value.indexOf(value) isnt -1))
         @remove(key, value)
       else
         if unique then @replace(key, value) else @add(key, value)
