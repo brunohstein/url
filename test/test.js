@@ -279,18 +279,6 @@
         return expect(url.hash.get()).to.equal("thirteen");
       });
     });
-    describe("add(value)", function() {
-      return it("should set the hash to the value", function() {
-        url.hash.add("twenty");
-        return expect(url.hash.print()).to.equal("#twenty");
-      });
-    });
-    describe("replace(value)", function() {
-      return it("should set the hash to the value", function() {
-        url.hash.replace("twenty");
-        return expect(url.hash.print()).to.equal("#twenty");
-      });
-    });
     describe("update(value)", function() {
       return it("should set the hash to the value", function() {
         url.hash.update("twenty");

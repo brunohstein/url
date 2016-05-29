@@ -208,16 +208,6 @@ describe "Hash", ->
     it "should return the value of the hash", ->
       expect(url.hash.get()).to.equal("thirteen")
 
-  describe "add(value)", ->
-    it "should set the hash to the value", ->
-      url.hash.add("twenty")
-      expect(url.hash.print()).to.equal("#twenty")
-
-  describe "replace(value)", ->
-    it "should set the hash to the value", ->
-      url.hash.replace("twenty")
-      expect(url.hash.print()).to.equal("#twenty")
-
   describe "update(value)", ->
     it "should set the hash to the value", ->
       url.hash.update("twenty")
